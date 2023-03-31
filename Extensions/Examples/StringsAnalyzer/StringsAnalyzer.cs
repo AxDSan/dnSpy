@@ -5,7 +5,7 @@ using dnSpy.Contracts.Extension;
 
 namespace StringsAnalyzer.Extension {
 	[ExportExtension]
-	sealed class TheExtension : IExtension {
+	sealed class StringsAnalyzer : IExtension {
 		public IEnumerable<string> MergedResourceDictionaries {
 			get {
 				yield return "Themes/resourcedict.xaml";
@@ -13,7 +13,7 @@ namespace StringsAnalyzer.Extension {
 		}
 
 		public ExtensionInfo ExtensionInfo => new ExtensionInfo {
-			ShortDescription = "Strings Analyzer",
+			ShortDescription = "Strings Analyzer plugin",
 		};
 
 		public void OnEvent(ExtensionEvent @event, object? obj) {

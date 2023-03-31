@@ -28,7 +28,7 @@ namespace StringsAnalyzer.Extension {
 	}
 
 	// Adds a menu item to the View menu to show the tool window
-	[ExportMenuItem(OwnerGuid = MenuConstants.APP_MENU_VIEW_GUID, Header = "Extension Tool Window", InputGestureText = "Ctrl+Alt+Z", Group = MenuConstants.GROUP_APP_MENU_VIEW_WINDOWS, Order = 2000)]
+	[ExportMenuItem(OwnerGuid = MenuConstants.APP_MENU_VIEW_GUID, Header = "Strings Analyzer", InputGestureText = "Ctrl+Alt+Z", Group = MenuConstants.GROUP_APP_MENU_VIEW_WINDOWS, Order = 2000)]
 	sealed class ViewCommand1 : MenuItemCommand {
 		ViewCommand1()
 			: base(ToolWindowLoader.OpenToolWindow) {
@@ -69,11 +69,11 @@ namespace StringsAnalyzer.Extension {
 
 	sealed class ToolWindowContentImpl : ToolWindowContent {
 		//TODO: Use your own guid
-		public static readonly Guid THE_GUID = new Guid("18785447-21A8-41DB-B8AD-0F166AEC0D08");
+		public static readonly Guid THE_GUID = new Guid("740baa9a-f5ad-40c2-8cf5-90a10584600b");
 		public const AppToolWindowLocation DEFAULT_LOCATION = AppToolWindowLocation.DefaultHorizontal;
 
 		public override Guid Guid => THE_GUID;
-		public override string Title => "Extension Example";
+		public override string Title => "Strings Analyzer";
 
 		// This is the object shown in the UI. Return a WPF object or a .NET object with a DataTemplate
 		public override object? UIObject => toolWindowControl;
@@ -119,50 +119,15 @@ namespace StringsAnalyzer.Extension {
 		}
 	}
 
-	sealed class ToolWindowVM : ViewModelBase {
-		public string StringOption1 {
-			get => stringOption1;
-			set {
-				if (stringOption1 != value) {
-					stringOption1 = value;
-					OnPropertyChanged(nameof(StringOption1));
-				}
-			}
+	public class ToolWindowVM : ViewModelBase {
+		public class StringAnalyzerData {
+			public string? StringValue { get; set; }
+			public string? IlOffset { get; set; }
+			public string? MdToken { get; set; }
+			public string? MdName { get; set; }
+			public string? FullmdName { get; set; }
+			public string? ModuleID { get; set; }
 		}
-		string stringOption1 = string.Empty;
-
-		public string StringOption2 {
-			get => stringOption2;
-			set {
-				if (stringOption2 != value) {
-					stringOption2 = value;
-					OnPropertyChanged(nameof(StringOption2));
-				}
-			}
-		}
-		string stringOption2 = string.Empty;
-
-		public string StringOption3 {
-			get => stringOption3;
-			set {
-				if (stringOption3 != value) {
-					stringOption3 = value;
-					OnPropertyChanged(nameof(StringOption3));
-				}
-			}
-		}
-		string stringOption3 = string.Empty;
-
-		public string StringOption4 {
-			get => stringOption4;
-			set {
-				if (stringOption4 != value) {
-					stringOption4 = value;
-					OnPropertyChanged(nameof(StringOption4));
-				}
-			}
-		}
-		string stringOption4 = string.Empty;
 
 		public bool IsEnabled { get; set; }
 		public bool IsVisible { get; set; }
