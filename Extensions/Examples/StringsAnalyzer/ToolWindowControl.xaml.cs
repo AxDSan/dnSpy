@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.ComponentModel;
 using dnlib.DotNet;
 using System.ComponentModel.Composition;
 using dnSpy.Contracts.Documents;
@@ -25,28 +26,54 @@ namespace StringsAnalyzer.Extension {
 		private string currentSortProperty = "StringValue";
 		private bool isAscending = true;
 
-		private RelayCommand? sortCommand;
-		public ICommand SortCommand => sortCommand ??= new RelayCommand(Sort);
+		private GridViewColumnHeader? lastHeaderClicked;
+		private ListSortDirection lastDirection = ListSortDirection.Ascending;
 
-		private void Sort(object parameter) {
-			if (parameter is string propertyName) {
-				// Toggle direction if same property, otherwise use ascending
+		private void SortListView(string propertyName, bool changeDirection = true) {
+			if (string.IsNullOrEmpty(propertyName))
+				return;
+
+			if (changeDirection) {
+				// Toggle direction if same property
 				if (propertyName == currentSortProperty)
 					isAscending = !isAscending;
-				else
+				else {
+					currentSortProperty = propertyName;
 					isAscending = true;
+				}
+			}
 
-				currentSortProperty = propertyName;
+			// Sort the filtered items
+			FilteredItems.Sort((a, b) => {
+				var comparison = CompareByProperty(a, b, propertyName);
+				return isAscending ? comparison : -comparison;
+			});
 
-				// Sort the filtered items
-				FilteredItems.Sort((a, b) => {
-					var comparison = CompareByProperty(a, b, propertyName);
-					return isAscending ? comparison : -comparison;
-				});
+			// Update ListView
+			stringAnalyzer = lvStringsAnalyzer;
+			stringAnalyzer.ItemsSource = null;
+			stringAnalyzer.ItemsSource = FilteredItems;
 
-				// Update ListView
-				stringAnalyzer.ItemsSource = null;
-				stringAnalyzer.ItemsSource = FilteredItems;
+			// Add visual feedback
+			var view = (GridView)lvStringsAnalyzer.View;
+			foreach (var column in view.Columns.Cast<GridViewColumn>()) {
+				var header = column.Header.ToString() switch {
+					"String Value" => "StringValue",
+					"IL Offset" => "IlOffset",
+					"MD Token" => "MdToken",
+					"MD Name" => "MdName",
+					"Full MD Name" => "FullmdName",
+					"Module" => "ModuleID",
+					_ => null
+				};
+
+				if (header == propertyName) {
+					column.Header = isAscending ? $"{column.Header} ▲" : $"{column.Header} ▼";
+				}
+				else {
+					// Remove arrows from other columns
+					column.Header = column.Header.ToString()?.Replace(" ▲", "").Replace(" ▼", "");
+				}
 			}
 		}
 
@@ -75,8 +102,9 @@ namespace StringsAnalyzer.Extension {
 			this.decompilerService = decompilerService;
 			InitializeComponent();
 			
-			// Add double click handler
+			// Add event handlers
 			lvStringsAnalyzer.MouseDoubleClick += LvStringsAnalyzer_MouseDoubleClick;
+			lvStringsAnalyzer.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(GridViewColumnHeader_Click));
 
 			// Subscribe to document changes
 			documentTabService.Value.DocumentTreeView.DocumentService.CollectionChanged += DocumentService_CollectionChanged;
