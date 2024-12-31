@@ -2,14 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using dnlib.DotNet;
 using System.ComponentModel.Composition;
 using dnSpy.Contracts.Documents;
 using dnSpy.Contracts.Documents.Tabs;
 using dnSpy.Contracts.Documents.Tabs.DocViewer;
 using dnSpy.Contracts.Decompiler;
+using dnSpy.Contracts.MVVM;
 using static StringsAnalyzer.Extension.ToolWindowVM;
 using System.Linq;
+using dnSpy.Contracts.TreeView;
+using dnSpy.Contracts.Documents.TreeView;
 
 namespace StringsAnalyzer.Extension {
 	public partial class ToolWindowControl : UserControl {
@@ -17,6 +21,46 @@ namespace StringsAnalyzer.Extension {
 		private List<StringAnalyzerData> FilteredItems = new List<StringAnalyzerData>();
 		public static ListView stringAnalyzer = new ListView();
 		internal IInputElement option1TextBox;
+
+		private string currentSortProperty = "StringValue";
+		private bool isAscending = true;
+
+		private RelayCommand? sortCommand;
+		public ICommand SortCommand => sortCommand ??= new RelayCommand(Sort);
+
+		private void Sort(object parameter) {
+			if (parameter is string propertyName) {
+				// Toggle direction if same property, otherwise use ascending
+				if (propertyName == currentSortProperty)
+					isAscending = !isAscending;
+				else
+					isAscending = true;
+
+				currentSortProperty = propertyName;
+
+				// Sort the filtered items
+				FilteredItems.Sort((a, b) => {
+					var comparison = CompareByProperty(a, b, propertyName);
+					return isAscending ? comparison : -comparison;
+				});
+
+				// Update ListView
+				stringAnalyzer.ItemsSource = null;
+				stringAnalyzer.ItemsSource = FilteredItems;
+			}
+		}
+
+		private int CompareByProperty(StringAnalyzerData a, StringAnalyzerData b, string propertyName) {
+			return propertyName switch {
+				"StringValue" => string.Compare(a.StringValue, b.StringValue, StringComparison.OrdinalIgnoreCase),
+				"IlOffset" => string.Compare(a.IlOffset, b.IlOffset, StringComparison.OrdinalIgnoreCase),
+				"MdToken" => string.Compare(a.MdToken, b.MdToken, StringComparison.OrdinalIgnoreCase),
+				"MdName" => string.Compare(a.MdName, b.MdName, StringComparison.OrdinalIgnoreCase),
+				"FullmdName" => string.Compare(a.FullmdName, b.FullmdName, StringComparison.OrdinalIgnoreCase),
+				"ModuleID" => string.Compare(a.ModuleID, b.ModuleID, StringComparison.OrdinalIgnoreCase),
+				_ => 0
+			};
+		}
 
 		private readonly Lazy<IDocumentTabService> documentTabService;
 		private readonly IDecompilerService decompilerService;
@@ -107,8 +151,15 @@ namespace StringsAnalyzer.Extension {
 			AllItems.Clear();
 			FilteredItems.Clear();
 
-			var document = documentTabService.Value.DocumentTreeView.DocumentService.GetDocuments().FirstOrDefault();
-			var module = document?.ModuleDef as ModuleDefMD;
+			// Get the selected node from the document tree view
+			var selectedNodes = documentTabService.Value.DocumentTreeView.TreeView.SelectedItems;
+			if (selectedNodes == null || selectedNodes.Length == 0) {
+				MessageBox.Show("Please select an assembly in the Assembly Explorer");
+				return;
+			}
+
+			// Get the module from the selected node
+			var module = GetModuleFromNode(selectedNodes[0]) as ModuleDefMD;
 
 			if (module == null) {
 				MessageBox.Show("No assembly is currently loaded");
@@ -190,6 +241,18 @@ namespace StringsAnalyzer.Extension {
 			if (item.Method != null && item.Offset.HasValue) {
 				documentTabService.Value.FollowReference(item.Method, newTab);
 			}
+		}
+
+		private ModuleDef? GetModuleFromNode(TreeNodeData node) {
+			// Handle different node types that might contain a module
+			if (node is ModuleDocumentNode moduleNode)
+				return moduleNode.Document.ModuleDef;
+			if (node is AssemblyDocumentNode assemblyNode)
+				return assemblyNode.Document.ModuleDef;
+			if (node is DsDocumentNode documentNode)
+				return documentNode.Document.ModuleDef;
+			
+			return null;
 		}
 
 		private void DocumentService_CollectionChanged(object? sender, EventArgs e) {

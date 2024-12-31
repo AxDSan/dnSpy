@@ -57,12 +57,120 @@
                   Background="#FF252525" BorderBrush="#FF395D9E" Foreground="White">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="String Value" Width="200" DisplayMemberBinding="{Binding StringValue}" />
-                    <GridViewColumn Header="IL Offset" Width="70" DisplayMemberBinding="{Binding IlOffset}" />
-                    <GridViewColumn Header="MD Token" Width="100" DisplayMemberBinding="{Binding MdToken}" />
-                    <GridViewColumn Header="MD Name" Width="150" DisplayMemberBinding="{Binding MdName}" />
-                    <GridViewColumn Header="Full MD Name" Width="200" DisplayMemberBinding="{Binding FullmdName}" />
-                    <GridViewColumn Header="Module" Width="200" DisplayMemberBinding="{Binding ModuleID}" />
+                    <GridViewColumn Header="String Value" Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="String Value">
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                                    Command="{Binding DataContext.SortCommand,
+                                                    RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="StringValue"/>
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding StringValue}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="IL Offset" Width="70">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="IL Offset">
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                                    Command="{Binding DataContext.SortCommand,
+                                                    RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="IlOffset"/>
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding IlOffset}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="MD Token" Width="100">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="MD Token">
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                                    Command="{Binding DataContext.SortCommand,
+                                                    RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="MdToken"/>
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding MdToken}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="MD Name" Width="150">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="MD Name">
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                                    Command="{Binding DataContext.SortCommand,
+                                                    RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="MdName"/>
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding MdName}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Full MD Name" Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Full MD Name">
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                                    Command="{Binding DataContext.SortCommand,
+                                                    RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="FullmdName"/>
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FullmdName}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Module" Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Module">
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                                    Command="{Binding DataContext.SortCommand,
+                                                    RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="ModuleID"/>
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ModuleID}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
             <ListView.ContextMenu>

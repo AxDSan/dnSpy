@@ -13,6 +13,7 @@
   <ItemGroup>
     <Compile Remove="Colorizer.cs" />
     <Compile Remove="HexColorizer.cs" />
+    <Compile Remove="TreeNodeDataProvider.cs" />
     <Compile Remove="TreeViewNodeColorizer.cs" />
   </ItemGroup>
 
